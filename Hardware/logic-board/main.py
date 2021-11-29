@@ -1,7 +1,6 @@
 import os
 import subprocess
 import time
-import re
 
 def init_bluetooth():
     # Turn on bluetooth
@@ -44,7 +43,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-'''
-outt = subprocess.check_output('bt-agent --capability=NoInputNoOutput', shell=True)
-'''
