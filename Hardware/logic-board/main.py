@@ -6,7 +6,7 @@ def init_bluetooth():
     # Turn on bluetooth
     os.system('rfkill unblock bluetooth')
     # Make rpi discoverable
-    os.system('sudo hciconfig hci0 piscan')
+    os.system('bluetoothctl discoverable on')
     # Accept any incoming connection
     connect = subprocess.Popen(['bt-agent', '--capability=NoInputNoOutput'], shell=False, stdout=subprocess.PIPE)
     
@@ -28,6 +28,8 @@ def init_bluetooth():
                 if prev_output == output:
                     # Device is connected
                     time.sleep(6)
+                    # Turn discoverable off and terminate scan 
+                    os.system('bluetoothctl discoverable off')
                     connect.terminate()
                     return 0
                 else:
