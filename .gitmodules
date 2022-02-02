@@ -1,0 +1,3 @@
+[submodule "Software/dshop-light-up-piano-app"]
+	path = Software/dshop-light-up-piano-app
+	url = https://github.com/RandyRus/dshop-light-up-piano-app.git
