@@ -6,6 +6,6 @@ if __name__ == '__main__':
     ser.reset_input_buffer()
     while True:
         if ser.in_waiting > 0:
-            line = ser.read(12).decode('utf-8').rstrip()
+            line = ser.read(13).decode('utf-8').rstrip()
             print(line)
 
