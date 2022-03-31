@@ -1,6 +1,22 @@
 import os
 import subprocess
 import time
+import serial
+
+def kill_rfcomm_processes():
+    subprocess.run(['export TERM=xterm-256color'], shell=True)
+    try:
+        broken_process = subprocess.Popen(['top -b -n 1 | grep \' rfcomm\''], shell=True, stdout=subprocess.PIPE)
+        output = broken_process.stdout.readline()
+        while output:
+            output = output[:len(output)-1].decode()
+            print(output)
+            os.system('sudo kill ' + output[:output.index('r')-1])
+            broken_process = subprocess.Popen(['top -b -n 1 | grep \' rfcomm\''], shell=True, stdout=subprocess.PIPE)
+            output = broken_process.stdout.readline()
+    except:
+        print('exception in kill_rfcomm_processes')
+
 
 def init_bluetooth():
     # Turn on bluetooth
@@ -27,7 +43,7 @@ def init_bluetooth():
                 output = output[:output.rindex('for')-1]       
                 if prev_output == output:
                     # Device is connected
-                    time.sleep(6)
+                    time.sleep(7)
                     # Turn discoverable off and terminate scan 
                     os.system('bluetoothctl discoverable off')
                     connect.terminate()
@@ -39,10 +55,13 @@ def init_bluetooth():
     return 1
 
 def init_serial_comm():
-    serial_result = subprocess.Popen(['sudo', 'rfcomm', 'watch', 'hci0'], shell=False, stdout=subprocess.PIPE)
     while True:
         try:
-            output = serial_result.stdout.readline()
+            serial_result = subprocess.Popen(['sudo rfcomm watch hci0'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if serial_result.stderr.readline():
+                output = serial_result.stderr.readline()
+            else:
+                output = serial_result.stdout.readline()
         except:
             continue
         if serial_result.poll() is not None:
@@ -55,14 +74,10 @@ def init_serial_comm():
                 print('Serial Connection Created Successfuly')
                 return 0
             elif 'bind RFCOMM socket: Address already in use' in output:
-                subprocess.Popen(['top', '-b', '|', 'grep', '\' rfcomm\''], shell=False, stdout=subprocess.PIPE)
-                try:
-                    output = serial_result.stdout.readline()
-                except:
-                    continue
-                if output:
-                    output = output[:len(output)-1].decode()
-                    os.system('kill ' + output[:output.index(' ')-1])
+                kill_rfcomm_processes()
+        else:
+            ser = serial.Serial('/dev/rfcomm0')
+            ser.write(b'Hello There')
     return 1
 
 def main():
