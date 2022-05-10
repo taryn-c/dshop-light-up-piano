@@ -21,6 +21,12 @@ dict = {
 zero_char = '0'
 one_char = '1'
 
+def extract_note(multiple_notes):
+    no_sound_line = '000000000000'
+    first_index = multiple_notes.index(one_char)
+    no_sound_line = no_sound_line[:first_index] + one_char + no_sound_line[first_index+1:]
+    return no_sound_line
+    
 def play_note(file_name):
     print('init =', pygame.mixer.get_init())
     print('channels =', pygame.mixer.get_num_channels())
@@ -30,7 +36,7 @@ def play_note(file_name):
 
 def convert_binary_to_piano_note(line):
     while line.count('1') > 0:
-        file = dict[line]
+        file = dict[extract_note(line)]
         play_note(file)
         line = line.replace(one_char, zero_char, 1)
 
