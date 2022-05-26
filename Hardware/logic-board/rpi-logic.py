@@ -4,6 +4,7 @@ import pygame
 import threading
 from time import sleep
 
+# dashed notes are sharps 
 dict = {
     '100000000000': 'piano/c5.ogg',
     '010000000000': 'piano/c-5.ogg',
