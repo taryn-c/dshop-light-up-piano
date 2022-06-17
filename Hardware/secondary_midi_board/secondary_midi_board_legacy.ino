@@ -1,17 +1,14 @@
 /*******************************************************************************
-
  Bare Conductive Multi Board MIDI Piano
  --------------------------------------
  
  secondary_midi_board.ino - sends touch data via Serial1 when A0 goes high
-
  Connect this to a board running primary_midi_board.ino. TX on this board must 
  connect to RX on the primary board, and A0 on this board must connect to one of 
  A0 to A5 on the primary board. The pin that A0 is connected to defines this 
  board's position in the sequence of secondary boards - A0 is the first secondary 
  board, A1 is the second secondary board, and so on up to a total of 7 boards 
  (1 primary and 6 secondary).
-
  Note: all boards need power and they require their ground connections to be
  connected together. It is possible to power groups of up to four boards 
  together by commoning the 5V connection between boards, but further groups
@@ -43,7 +40,6 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
-
 *******************************************************************************/
 
 // compiler error handling
@@ -71,7 +67,7 @@ void setup(){
   pinMode(triggerPin, INPUT);
   digitalWrite(triggerPin, LOW); // ensure internal pullup is disabled
 
-  //pinMode(1, INPUT); // ensure that TX goes out of circuit when the UART is disabled
+  pinMode(1, INPUT); // ensure that TX goes out of circuit when the UART is disabled
  
   for(int i=0; i<12; i++){
     MPR121.setTouchThreshold(i, 40);
@@ -82,9 +78,9 @@ void setup(){
 void loop(){
   processInputs();
   thisTriggerValue = digitalRead(triggerPin);
-  //if(thisTriggerValue && !lastTriggerValue){ // rising edge triggered
+  if(thisTriggerValue && !lastTriggerValue){ // rising edge triggered
     sendSerialStatus();
-  //}
+  }
   lastTriggerValue = thisTriggerValue;
 }
 
@@ -102,8 +98,8 @@ void processInputs() {
 }
 
 void sendSerialStatus(){
-  Serial.begin(57600);
-  Serial.write('T');
-  Serial.write(touchStatus, 12);
-  Serial.end();
+  Serial1.begin(57600);
+  Serial1.write('T');
+  Serial1.write(touchStatus, 12);
+  Serial1.end();
 }
