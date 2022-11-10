@@ -2,7 +2,11 @@
 import serial
 import pygame
 import threading
+import socketio
 from time import sleep
+from collections import Counter
+
+sio = socketio.Client()
 
 # dashed notes are sharps 
 dict = {
@@ -30,8 +34,8 @@ def extract_note(multiple_notes):
     return no_sound_line
     
 def play_note(file_name):
-    print('init =', pygame.mixer.get_init())
-    print('channels =', pygame.mixer.get_num_channels())
+    # print('init =', pygame.mixer.get_init())
+    # print('channels =', pygame.mixer.get_num_channels())
     # play mp3 files
     # pygame.mixer.music.load(file_name)
     # pygame.mixer.music.play()
@@ -41,24 +45,32 @@ def play_note(file_name):
     print(file_name)
 
 def convert_binary_to_piano_note(line):
-    while line.count('1') > 0:
-        file = dict[extract_note(line)]
+    line_copy = line[:]
+    while line_copy.count('1') > 0:
+        file = dict[extract_note(line_copy)]
         play_note(file)
         # t1 = threading.Thread(target=play_note, args=(file,))
         # t1.start()
         # t1.join()
-        line = line.replace(one_char, zero_char, 1)
+        line_copy = line_copy.replace(one_char, zero_char, 1)
 
 if __name__ == '__main__':
     pygame.mixer.init()
+    sio.connect('http://localhost:3000')
     ser = serial.Serial('/dev/ttyACM0', 57600, timeout=0)
     ser.reset_input_buffer()
     prev_line = ''
     while True:
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
+            line_counter = Counter(line)
+            prev_line_counter = Counter(prev_line)
             if line != prev_line:
-                print('line: ' + line)
+                print('line1: ' + line)
+                sio.emit('pythonToServer', {'line': line})
+                # print('line_counter: ' + str(line_counter))
                 convert_binary_to_piano_note(line)
             prev_line = line
 
+# 00101
+# 00100
