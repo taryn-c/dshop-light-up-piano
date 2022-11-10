@@ -71,7 +71,7 @@ void setup(){
   pinMode(triggerPin, INPUT);
   digitalWrite(triggerPin, LOW); // ensure internal pullup is disabled
 
-  pinMode(1, INPUT); // ensure that TX goes out of circuit when the UART is disabled
+  //pinMode(1, INPUT); // ensure that TX goes out of circuit when the UART is disabled
  
   for(int i=0; i<12; i++){
     MPR121.setTouchThreshold(i, 40);
@@ -82,9 +82,9 @@ void setup(){
 void loop(){
   processInputs();
   thisTriggerValue = digitalRead(triggerPin);
-  if(thisTriggerValue && !lastTriggerValue){ // rising edge triggered
+  //if(thisTriggerValue && !lastTriggerValue){ // rising edge triggered
     sendSerialStatus();
-  }
+  //}
   lastTriggerValue = thisTriggerValue;
 }
 
@@ -102,8 +102,10 @@ void processInputs() {
 }
 
 void sendSerialStatus(){
-  Serial1.begin(57600);
-  Serial1.write('T');
-  Serial1.write(touchStatus, 12);
-  Serial1.end();
+  if(Serial.availableForWrite() >= 14){
+    Serial.begin(57600);
+    Serial.write(touchStatus, 12);
+    Serial.println();
+    Serial.end();
+  }
 }
