@@ -6,8 +6,8 @@ To set up the raspberry pi environment, 2 things needs to be run
   - WebServer.js acts as the intermediary between python application in pi and the react application on the tablet.
   - It is set up to send/receive data from python to react.
   - run WebServer.js using node
-        - First, run "npm i" in the web_server folder to install all dependencies.
-        - run app using "node WebServer.js"
+    - First, run "npm i" in the web_server folder to install all dependencies.
+    - run app using "node WebServer.js"
     
 2. Python app
  - rpi-logic.py
